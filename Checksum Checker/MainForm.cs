@@ -8,11 +8,14 @@ namespace Checksum_Checker
 {
     public partial class MainForm : Form
     {
+        // Hashing thread
         BackgroundWorker calcChecksumThread = new BackgroundWorker();
 
         public MainForm()
         {
             InitializeComponent();
+
+            // Setup BackgroundWorker
             calcChecksumThread.WorkerReportsProgress = false;
             calcChecksumThread.WorkerSupportsCancellation = false;
             calcChecksumThread.DoWork += new DoWorkEventHandler(calcChecksumThread_DoWork);
@@ -40,11 +43,13 @@ namespace Checksum_Checker
 
         private void calcChecksumThread_DoWork(object sender, DoWorkEventArgs e)
         {
+            // Retrieve arguments from array
             object[] args   = (object[])e.Argument;
             string filepath = (string)args[0];
             string result   = "";
             int hashChoice  = (int)args[1];
 
+            // Open file and compute hash
             try
             {
                 using (FileStream file = new FileStream(filepath, FileMode.Open, FileAccess.Read))
@@ -93,6 +98,7 @@ namespace Checksum_Checker
 
         private void calcChecksumThread_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // Check result
             pgbProgress.Style = ProgressBarStyle.Blocks;
             if (e.Error == null && (string)e.Result != "Error")
             {
@@ -103,6 +109,7 @@ namespace Checksum_Checker
                 }
                 else
                 {
+                    // Compare computed hash with input
                     txtOutput.Text = (string)e.Result;
                     txtInput.Text = txtInput.Text.ToUpper();
                     txtInput.Focus();
@@ -137,6 +144,7 @@ namespace Checksum_Checker
                 return;
             }
 
+            // Ask user for filepath
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
             {
